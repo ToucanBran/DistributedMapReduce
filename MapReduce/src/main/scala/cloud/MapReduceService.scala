@@ -1,4 +1,4 @@
-package common
+package cloud
 
 import scala.concurrent.duration._
 import akka.actor.Actor
@@ -12,7 +12,7 @@ import akka.cluster.routing.{ ClusterRouterPool, ClusterRouterPoolSettings }
 import akka.routing.ConsistentHashingPool
 import akka.routing.Broadcast
 import com.typesafe.config.ConfigFactory
-
+import common._
 //#service
 class MapReduceService extends Actor {
   val reducers = ConfigFactory.load.getInt("number-reducers")

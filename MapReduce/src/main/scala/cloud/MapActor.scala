@@ -1,9 +1,9 @@
-package common
+package cloud
 
 import scala.collection.mutable.HashSet
 import akka.routing.ConsistentHashingRouter.ConsistentHashableEnvelope
 import scala.io.Source
-
+import common._
 import akka.actor.{Actor, ActorRef}
 import akka.routing.Broadcast
 

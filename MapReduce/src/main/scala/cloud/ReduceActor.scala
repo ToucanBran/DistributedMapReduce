@@ -1,5 +1,5 @@
-package common
-
+package cloud
+import common._
 import scala.collection.mutable.HashMap
 
 import akka.actor.{Actor, ActorRef}

@@ -1,4 +1,4 @@
-package client
+package cloud
 
 import com.typesafe.config.ConfigFactory
 import akka.actor.ActorSystem
