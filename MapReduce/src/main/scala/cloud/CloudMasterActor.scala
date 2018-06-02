@@ -8,13 +8,11 @@ import akka.cluster.singleton.ClusterSingletonManager
 import akka.cluster.singleton.ClusterSingletonManagerSettings
 import akka.cluster.singleton.ClusterSingletonProxy
 import akka.cluster.singleton.ClusterSingletonProxySettings
-import common._
 
 object CloudMasterActor {
   def main(args: Array[String]): Unit = {
     if (args.isEmpty) {
       startup(Seq("0"))
-      //CloudClientOneMaster.main(Array.empty)
     } else {
       startup(args)
     }
@@ -33,19 +31,15 @@ object CloudMasterActor {
 
       val system = ActorSystem("ClusterSystem", config)
 
-      val y = system.actorOf(ClusterSingletonManager.props(
+      system.actorOf(ClusterSingletonManager.props(
         singletonProps = Props[MapReduceService],
         terminationMessage = PoisonPill,
         settings = ClusterSingletonManagerSettings(system).withRole("compute")),
         name = "mapReduceService")
 
-      val x = system.actorOf(ClusterSingletonProxy.props(singletonManagerPath = "/user/mapReduceService",
+      system.actorOf(ClusterSingletonProxy.props(singletonManagerPath = "/user/mapReduceService",
         settings = ClusterSingletonProxySettings(system).withRole("compute")),
         name = "mapReduceServiceProxy")
-
-        println(s"SingltonManager: $y")
-        println(x)
-
     }
   }
 }

@@ -17,7 +17,8 @@ lazy val akkaSettings = Seq(
         "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
         "de.heikoseeberger" %% "constructr" % constructrVersion,
         "com.lightbend.constructr"  %% "constructr-coordination-zookeeper"  % "0.3.3",
-        "de.heikoseeberger" %% "constructr-coordination-etcd" % constructrVersion)
+        "de.heikoseeberger" %% "constructr-coordination-etcd" % constructrVersion,
+        "ch.qos.logback" % "logback-classic" % "1.2.3")
     )
 
 lazy val cloudClient = (project in file("CloudClient"))

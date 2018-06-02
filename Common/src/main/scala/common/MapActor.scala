@@ -3,20 +3,20 @@ package common
 import scala.collection.mutable.HashSet
 import akka.routing.ConsistentHashingRouter.ConsistentHashableEnvelope
 import scala.io.Source
-import common._
 import akka.actor.{Actor, ActorRef}
 import akka.routing.Broadcast
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class MapActor(reduceActors: ActorRef) extends Actor {
-  
+  val logger = LoggerFactory.getLogger(classOf[MapActor])
   val STOP_WORDS_LIST = List("a", "am", "an", "and", "are", "as", "at", "be",
     "do", "go", "if", "in", "is", "it", "of", "on", "the", "to")
-    var flushesRecd = 0
   def receive = {
     case BookJob(book, replyTo) =>
+      logger.info(s"${self.path.name}: Processing ${book.title}")
       process(book, replyTo)
     case Flush => 
-      flushesRecd += 1
       reduceActors ! Broadcast(Flush)
   }
 
@@ -26,7 +26,6 @@ class MapActor(reduceActors: ActorRef) extends Actor {
     val url = book.url
     val content = getContent(url)
     var namesFound = HashSet[String]()
-    println("Processing...")
     for (word <- content.split("[\\p{Punct}\\s]+")) {
       if ((!STOP_WORDS_LIST.contains(word)) && word(0).isUpper && !namesFound.contains(word)) {
 	        reduceActors ! ConsistentHashableEnvelope(message = WordJob(word, title, replyTo), hashKey = word)
@@ -40,7 +39,9 @@ class MapActor(reduceActors: ActorRef) extends Actor {
     try {
       Source.fromURL(url).mkString
     } catch {     // If failure, just return an empty string
-      case e: Exception => ""
+      case e: Exception => 
+        logger.error("Couldn't get content from $url")
+        ""
     }
   }
 }

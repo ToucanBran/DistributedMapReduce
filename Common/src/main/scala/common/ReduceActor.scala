@@ -1,11 +1,13 @@
 package common
-import common._
-import scala.collection.mutable.HashMap
 
+import scala.collection.mutable.HashMap
 import akka.actor.{Actor, ActorRef}
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class ReduceActor(service: ActorRef) extends Actor {
   var remainingMappers = 4
+  val logger = LoggerFactory.getLogger(classOf[ReduceActor])
   var rMap = HashMap[String, List[String]]()
   // Just in case we have multiple clients asking for different books,
   // we should make sure to send back the words from books each one wanted
@@ -25,13 +27,12 @@ class ReduceActor(service: ActorRef) extends Actor {
         else
           reduceMap += (word -> List(title))
       }
-    case Flush =>
-      
+    case Flush => 
       remainingMappers -= 1
-      //println(s"Hi, reducer here who just received a flush ${self.path}. Remaining mappers: $remainingMappers")
       if (remainingMappers == 0) {
         for ((replyTo, reduceMap) <- sendMap) {
-          replyTo ! Results(s"${self.path.toStringWithoutAddress}")
+          logger.info("Reduce finished. Sending result to $replyTo")
+          replyTo ! Results(s"${self.path.toStringWithoutAddress} - $reduceMap")
         }
         service ! Done
       }

@@ -3,6 +3,8 @@ version: '3'
 services:
   zookeeper:
     image: zookeeper:3.4.10
+    logging:
+      driver: none
     ports:
       - "2181:2181" # in case you want to access ZooKeeper directly from your Docker host machine
     container_name: service-discovery-zk
