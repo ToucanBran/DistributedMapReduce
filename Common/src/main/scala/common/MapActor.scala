@@ -1,4 +1,4 @@
-package cloud
+package common
 
 import scala.collection.mutable.HashSet
 import akka.routing.ConsistentHashingRouter.ConsistentHashableEnvelope
@@ -26,6 +26,7 @@ class MapActor(reduceActors: ActorRef) extends Actor {
     val url = book.url
     val content = getContent(url)
     var namesFound = HashSet[String]()
+    println("Processing...")
     for (word <- content.split("[\\p{Punct}\\s]+")) {
       if ((!STOP_WORDS_LIST.contains(word)) && word(0).isUpper && !namesFound.contains(word)) {
 	        reduceActors ! ConsistentHashableEnvelope(message = WordJob(word, title, replyTo), hashKey = word)

@@ -21,9 +21,7 @@ object CloudMasterActor {
   }
 
   def startup(ports: Seq[String]): Unit = {
-    println(ports)
     ports foreach { port =>
-    println(port)
       // Override the configuration of the port when specified as program argument
       val config =
         ConfigFactory.parseString(s"""
@@ -35,15 +33,19 @@ object CloudMasterActor {
 
       val system = ActorSystem("ClusterSystem", config)
 
-      system.actorOf(ClusterSingletonManager.props(
+      val y = system.actorOf(ClusterSingletonManager.props(
         singletonProps = Props[MapReduceService],
         terminationMessage = PoisonPill,
         settings = ClusterSingletonManagerSettings(system).withRole("compute")),
         name = "mapReduceService")
 
-      system.actorOf(ClusterSingletonProxy.props(singletonManagerPath = "/user/mapReduceService",
+      val x = system.actorOf(ClusterSingletonProxy.props(singletonManagerPath = "/user/mapReduceService",
         settings = ClusterSingletonProxySettings(system).withRole("compute")),
         name = "mapReduceServiceProxy")
+
+        println(s"SingltonManager: $y")
+        println(x)
+
     }
   }
 }

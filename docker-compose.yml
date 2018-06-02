@@ -1,14 +1,29 @@
-version: '2'
+version: '3'
+
 services:
+  zookeeper:
+    image: zookeeper:3.4.10
+    ports:
+      - "2181:2181" # in case you want to access ZooKeeper directly from your Docker host machine
+    container_name: service-discovery-zk
+
   seed:
-    image: bgomez89/cloudmapreduce:1.0
+    image: bgomez89/mapreduce-docker:1.0
     environment:
-      CLUSTER_PORT: 9090
-      CLUSTER_IP: seed
-      SEED_PORT_1600_TCP_ADDR: seed
+      - "ZK_IP=service-discovery-zk:2181"
+    depends_on:
+      - "zookeeper"
+
+  seed2:
+    image: bgomez89/mapreduce-docker:1.0
+    environment:
+      - "ZK_IP=service-discovery-zk:2181"
+    depends_on:
+      - "zookeeper"
+
   c1:
-    image: bgomez89/cloudmapreduce:1.0
+    image: bgomez89/cloudclient-docker:1.0
     environment:
-      CLUSTER_IP: c1
-      CLUSTER_PORT: 9091
-      SEED_PORT_1600_TCP_ADDR: seed
+      - "ZK_IP=service-discovery-zk:2181"
+    depends_on:
+      - "zookeeper"

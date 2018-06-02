@@ -1,4 +1,4 @@
-package cloud
+package common
 import common._
 import scala.collection.mutable.HashMap
 
@@ -31,7 +31,7 @@ class ReduceActor(service: ActorRef) extends Actor {
       //println(s"Hi, reducer here who just received a flush ${self.path}. Remaining mappers: $remainingMappers")
       if (remainingMappers == 0) {
         for ((replyTo, reduceMap) <- sendMap) {
-          replyTo ! Results(s"${self.path.toStringWithoutAddress}: $reduceMap")
+          replyTo ! Results(s"${self.path.toStringWithoutAddress}")
         }
         service ! Done
       }

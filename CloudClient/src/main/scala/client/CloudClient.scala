@@ -15,11 +15,13 @@ import java.util.concurrent.ThreadLocalRandom
 
 class CloudClient(servicePath: String) extends Actor {
   val cluster = Cluster(context.system)
+  println(s"getting servicePathelements for client $servicePath - $cluster")
   val servicePathElements = servicePath match {
     case RelativeActorPath(elements) => elements
     case _ => throw new IllegalArgumentException(
       "servicePath [%s] is not a valid relative actor path" format servicePath)
   }
+  println(servicePathElements)
   import context.dispatcher
   val tickTask = context.system.scheduler.schedule(2.seconds, 2.seconds, self, "tick")
 
@@ -27,6 +29,7 @@ class CloudClient(servicePath: String) extends Actor {
   var allJobsSent = false
 
   override def preStart(): Unit = {
+    println("prestart")
     cluster.subscribe(self, classOf[MemberEvent], classOf[ReachabilityEvent])
   }
   override def postStop(): Unit = {
@@ -36,6 +39,7 @@ class CloudClient(servicePath: String) extends Actor {
 
   def receive = {
     case "tick" if nodes.nonEmpty && !allJobsSent =>
+      println("Client - service i'm sending to path is $service")
       // just pick any one
       val address = nodes.toIndexedSeq(ThreadLocalRandom.current.nextInt(nodes.size))
       val service = context.actorSelection(RootActorPath(address) / servicePathElements)
@@ -75,6 +79,5 @@ object CloudClientOneMaster {
     // note that client is not a compute node, role not defined
     val system = ActorSystem("ClusterSystem")
     system.actorOf(Props(classOf[CloudClient], "/user/mapReduceServiceProxy"), "client")
-
   }
 }

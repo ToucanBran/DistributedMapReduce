@@ -14,7 +14,9 @@ lazy val akkaSettings = Seq(
         "com.typesafe.akka" %% "akka-remote" % akkaVersion,
         "com.typesafe.akka" %% "akka-cluster" % akkaVersion,
         "com.typesafe.akka" %% "akka-cluster-tools" % akkaVersion,
+        "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
         "de.heikoseeberger" %% "constructr" % constructrVersion,
+        "com.lightbend.constructr"  %% "constructr-coordination-zookeeper"  % "0.3.3",
         "de.heikoseeberger" %% "constructr-coordination-etcd" % constructrVersion)
     )
 
@@ -55,8 +57,7 @@ lazy val dockerCommon = Seq (
     dockerBaseImage := "java",
     dockerRepository := Some("bgomez89"),
     packageName in Docker := name.value + "-docker",
-    dockerUpdateLatest := true,
-    version in Docker := "prod")
+    dockerUpdateLatest := true)
 
 lazy val docker = (project in file("."))
 .settings(commonSettings)
