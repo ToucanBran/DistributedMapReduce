@@ -16,7 +16,7 @@ class MapReduceService extends Actor {
   val mappers = ConfigFactory.load.getInt("number-mappers")
   val logger = LoggerFactory.getLogger(classOf[MapReduceService])
   val reduceActors = context.actorOf(ClusterRouterPool(ConsistentHashingPool(0), ClusterRouterPoolSettings(
-    totalInstances = 1000, maxInstancesPerNode = reducers, allowLocalRoutees = true)).props(Props(classOf[ReduceActor], self)),
+    totalInstances = 1000, maxInstancesPerNode = reducers, allowLocalRoutees = true)).props(Props(classOf[ReduceActor], self, mappers)),
   name = "reducers")
 
   val mapActors = context.actorOf(ClusterRouterPool(RoundRobinPool(0), ClusterRouterPoolSettings(
@@ -24,10 +24,11 @@ class MapReduceService extends Actor {
   name = "mappers")
 
   var pending = 16;
-  
+  val client: ActorRef = null
   def receive = {
     case msg: Book =>
       logger.info("Received job, forwarding to map actors pool")
+      
       mapActors ! BookJob(msg, sender)
     case Flush =>
       logger.info("Received flush, forwarding to map actors pool")

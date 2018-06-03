@@ -5,8 +5,8 @@ import akka.actor.{Actor, ActorRef}
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class ReduceActor(service: ActorRef) extends Actor {
-  var remainingMappers = 4
+class ReduceActor(service: ActorRef, totalMappers: Integer) extends Actor {
+  var remainingMappers = totalMappers
   val logger = LoggerFactory.getLogger(classOf[ReduceActor])
   var rMap = HashMap[String, List[String]]()
   // Just in case we have multiple clients asking for different books,
@@ -31,8 +31,8 @@ class ReduceActor(service: ActorRef) extends Actor {
       remainingMappers -= 1
       if (remainingMappers == 0) {
         for ((replyTo, reduceMap) <- sendMap) {
-          logger.info("Reduce finished. Sending result to $replyTo")
-          replyTo ! Results(s"${self.path.toStringWithoutAddress} - $reduceMap")
+          logger.info(s"Reduce finished. Sending result to $replyTo")
+          replyTo ! Results(s"${self.path.toStringWithoutAddress} - reduced back")
         }
         service ! Done
       }

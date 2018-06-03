@@ -62,6 +62,7 @@ class CloudClient(servicePath: String) extends Actor {
       val address = nodes.toIndexedSeq(ThreadLocalRandom.current.nextInt(nodes.size))
       val service = context.actorSelection(RootActorPath(address) / servicePathElements)
       logger.info(s"Sending ${jobs.length} job(s)")
+      println(s"TOTAL NODES: ${nodes.size}")
       jobs.foreach(service ! _)
       service ! Flush      
     case result: Results =>
