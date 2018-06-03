@@ -24,7 +24,6 @@ class MapReduceService extends Actor {
   name = "mappers")
 
   var pending = 16;
-  val client: ActorRef = null
   def receive = {
     case msg: Book =>
       logger.info("Received job, forwarding to map actors pool")

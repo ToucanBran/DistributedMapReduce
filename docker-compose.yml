@@ -22,8 +22,15 @@ services:
       - "ZK_IP=service-discovery-zk:2181"
     depends_on:
       - "zookeeper"
+  
+  node3:
+    image: bgomez89/mapreduce-docker:1.0
+    environment:
+      - "ZK_IP=service-discovery-zk:2181"
+    depends_on:
+      - "zookeeper"
 
-  c1:
+  client:
     image: bgomez89/cloudclient-docker:1.0
     environment:
       - "ZK_IP=service-discovery-zk:2181"
